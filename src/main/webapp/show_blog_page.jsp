@@ -1,3 +1,5 @@
+<%@page import="com.tech.blog.dao.LikeDao"%>
+<%@page import="com.tech.blog.dao.UserDao"%>
 <%@page import="com.tech.blog.entities.Post"%>
 <%@page import="com.tech.blog.helper.ConnectionProvider"%>
 <%@page import="com.tech.blog.dao.PostDao"%>
@@ -64,12 +66,16 @@ body{
   background-size: cover;
 }
 </style>
+<div id="fb-root"></div>
+<!-- <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v17.0" nonce="bIKVMcGS"></script>
 
-
+ -->
 </head>
 
 
 <body>
+
+
 
 <!-- Start of nav bar -->
 <nav class="navbar navbar-expand-lg navbar-light primary-background">
@@ -308,7 +314,18 @@ body{
   
   <div class="row my-3">
   <div class="col-md-8">
-     <p class="post-user-info"> <a href="#"> Durgesh Towari</a>  has Posted: </p>
+  
+  
+   <% /*  Fetching   the user who posted the blog*/
+      
+      int  userId = p.getUserId();
+       
+            UserDao daouser = new UserDao(ConnectionProvider.getConnection());
+           User u=  daouser.getUserByUserId(userId);
+            
+      %>
+  
+     <p class="post-user-info"> <a href="#"><%= u.getName() %>  </a>  has Posted: </p>
   </div>
   <div class="col-md-4">
   <p  class="post-date"><%=p.getpDate().toLocaleString() %> </p>
@@ -324,11 +341,20 @@ body{
     </div>
   </div>
   
+  <% LikeDao ldao = new LikeDao(ConnectionProvider.getConnection());
+      int count= ldao.countLikesOnPost(postId);
+  
+  %>
+  
   <div class="card-footer primary-background">
-  <a href="#" class="btn btn-outline-light btn-sm"> <i class="fa fa-solid fa-thumbs-up"></i> <span>10</span> </a>      
+  <a href="#" onclick="doLike(<%= p.getPid() %>, <%= u.getId() %>)" class="btn btn-outline-light btn-sm"> <i class="fa fa-solid fa-thumbs-up"></i> <span class="like-counter"><%=count %></span> </a>      
   <a href="#" class="btn btn-outline-light btn-sm"> <i class= "fa fa-solid fa-comments"></i> <span>20</span> </a>
        
   </div>
+ <%--  <div class="card-footer">
+     <div class="fb-comments" data-href="http://localhost:9090/TechBlog/show_blog_page.jsp?post_id=<%= p.getPid()%>" data-width="10px" data-numposts="5"></div>
+  
+  </div> --%>
   </div>
   </div>
   </div>
@@ -343,7 +369,7 @@ body{
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-
+<script type="text/javascript" src="js/myjs.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function(){
